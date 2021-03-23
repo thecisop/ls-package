@@ -40,6 +40,7 @@ namespace Spells
             var attspeed = 1 / (owner.Stats.AttackSpeedFlat * .55f);
             var ownerPos = owner.Position;
             var spellPos = new Vector2(spell.X, spell.Y);
+            var soldierTime = 10f;
 
             if (!Extensions.IsVectorWithinRange(ownerPos, spellPos, castrange))
             {
@@ -55,6 +56,7 @@ namespace Spells
 
             if (!m.IsDead)
             {
+
                 var units = GetUnitsInRange(m.Position, attackrange, true);
 
                 foreach (var value in units)
@@ -67,6 +69,15 @@ namespace Spells
                     }
 
                 }
+
+                CreateTimer(soldierTime, () =>
+                {
+                    if (!m.IsDead)
+                    {
+                        m.Die(m);
+                    }
+                });
+
             }
 
 
