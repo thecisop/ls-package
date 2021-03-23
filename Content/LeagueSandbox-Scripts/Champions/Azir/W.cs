@@ -37,7 +37,6 @@ namespace Spells
             var castrange = spell.SpellData.CastRange[0];
             var apbonus = owner.Stats.AbilityPower.Total * 0.6f;
             var damage = 35 + ((15 * (spell.Level - 1)) + apbonus); //TODO: Should replace minion AA damage
-            var jackduration = 5.0f; //TODO: Split into Active duration and Hidden duration when Invisibility is implemented
             var attspeed = 1 / (owner.Stats.AttackSpeedFlat * .55f);
             var ownerPos = owner.Position;
             var spellPos = new Vector2(spell.X, spell.Y);
@@ -47,7 +46,9 @@ namespace Spells
                 spellPos = Extensions.GetClosestCircleEdgePoint(spellPos, ownerPos, castrange);
             }
 
-            IMinion m = AddMinion((IChampion)owner, "AzirSoldier", "AzirSoldier", spellPos);
+            IMinion m = AddMinion((IChampion)owner, "AzirSoldier", "AzirSoldier", spellPos, true);
+            m.SetIsTargetable(false);
+
             // AddParticle(owner, "JackintheboxPoof.troy", spellPos);
 
             var attackrange = m.Stats.Range.Total;
@@ -55,23 +56,14 @@ namespace Spells
             if (!m.IsDead)
             {
                 var units = GetUnitsInRange(m.Position, attackrange, true);
+
                 foreach (var value in units)
                 {
                     if (owner.Team != value.Team && value is IAttackableUnit && !(value is IBaseTurret) && !(value is IObjAnimatedBuilding))
                     {
                         m.SetTargetUnit(value);
                         m.AutoAttackProjectileSpeed = 1450;
-                        m.AutoAttackHit(value);
-                        for (petTimeAlive = 0.0f; petTimeAlive < jackduration; petTimeAlive += attspeed)
-                        {
-                            CreateTimer(petTimeAlive, () =>
-                            {
-                                if (!value.IsDead && !m.IsDead)
-                                {
-                                    value.TakeDamage(owner, damage, DamageType.DAMAGE_TYPE_MAGICAL, DamageSource.DAMAGE_SOURCE_SPELL, false);
-                                }
-                            });
-                        }
+
                     }
 
                 }
