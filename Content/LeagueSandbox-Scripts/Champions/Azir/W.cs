@@ -40,7 +40,7 @@ namespace Spells
             var attspeed = 1 / (owner.Stats.AttackSpeedFlat * .55f);
             var ownerPos = owner.Position;
             var spellPos = new Vector2(spell.X, spell.Y);
-            var soldierTime = 10f;
+            var soldierTime = 10f; //Need to halve range if within tower radius
 
             if (!Extensions.IsVectorWithinRange(ownerPos, spellPos, castrange))
             {
